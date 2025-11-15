@@ -35,7 +35,7 @@ export function average(numbers) {
 }
 
 /**
- * Finds the maximum value in an array of numbers
+ * Finds the maximum value in an array of numbers (ignoring non-numeric and NaN)
  * @param {number[]} numbers - Array of numbers
  * @returns {number} The maximum value
  */
@@ -43,14 +43,15 @@ export function max(numbers) {
   if (!Array.isArray(numbers)) {
     throw new TypeError("Input must be an array");
   }
-  if (numbers.length === 0) {
-    throw new Error("Array cannot be empty");
+  const filtered = numbers.filter(num => typeof num === "number" && !isNaN(num));
+  if (filtered.length === 0) {
+    throw new Error("Array must contain at least one valid number");
   }
-  return Math.max(...numbers);
+  return Math.max(...filtered);
 }
 
 /**
- * Finds the minimum value in an array of numbers
+ * Finds the minimum value in an array of numbers (ignoring non-numeric and NaN)
  * @param {number[]} numbers - Array of numbers
  * @returns {number} The minimum value
  */
@@ -58,10 +59,11 @@ export function min(numbers) {
   if (!Array.isArray(numbers)) {
     throw new TypeError("Input must be an array");
   }
-  if (numbers.length === 0) {
-    throw new Error("Array cannot be empty");
+  const filtered = numbers.filter(num => typeof num === "number" && !isNaN(num));
+  if (filtered.length === 0) {
+    throw new Error("Array must contain at least one valid number");
   }
-  return Math.min(...numbers);
+  return Math.min(...filtered);
 }
 
 /**
