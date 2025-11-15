@@ -7,7 +7,7 @@ jobs:
   say-hello:
     name: Say Hello
 
-       runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       
