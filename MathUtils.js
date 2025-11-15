@@ -9,11 +9,11 @@
  */
 export function sum(numbers) {
   if (!Array.isArray(numbers)) {
-    throw new TypeError("Input must be an array");
+    throw new TypeError('Input must be an array');
   }
   return numbers.reduce((acc, num) => {
-    if (typeof num !== "number") {
-      throw new TypeError("All elements must be numbers");
+    if (typeof num !== 'number') {
+      throw new TypeError('All elements must be numbers');
     }
     return acc + num;
   }, 0);
@@ -26,10 +26,10 @@ export function sum(numbers) {
  */
 export function average(numbers) {
   if (!Array.isArray(numbers)) {
-    throw new TypeError("Input must be an array");
+    throw new TypeError('Input must be an array');
   }
   if (numbers.length === 0) {
-    throw new Error("Array cannot be empty");
+    throw new Error('Array cannot be empty');
   }
   return sum(numbers) / numbers.length;
 }
@@ -41,11 +41,11 @@ export function average(numbers) {
  */
 export function max(numbers) {
   if (!Array.isArray(numbers)) {
-    throw new TypeError("Input must be an array");
+    throw new TypeError('Input must be an array');
   }
-  const filtered = numbers.filter(num => typeof num === "number" && !isNaN(num));
+  const filtered = numbers.filter(num => typeof num === 'number' && !isNaN(num));
   if (filtered.length === 0) {
-    throw new Error("Array must contain at least one valid number");
+    throw new Error('Array must contain at least one valid number');
   }
   return Math.max(...filtered);
 }
@@ -57,11 +57,11 @@ export function max(numbers) {
  */
 export function min(numbers) {
   if (!Array.isArray(numbers)) {
-    throw new TypeError("Input must be an array");
+    throw new TypeError('Input must be an array');
   }
-  const filtered = numbers.filter(num => typeof num === "number" && !isNaN(num));
+  const filtered = numbers.filter(num => typeof num === 'number' && !isNaN(num));
   if (filtered.length === 0) {
-    throw new Error("Array must contain at least one valid number");
+    throw new Error('Array must contain at least one valid number');
   }
   return Math.min(...filtered);
 }
@@ -72,8 +72,8 @@ export function min(numbers) {
  * @returns {boolean} True if the number is prime
  */
 export function isPrime(num) {
-  if (typeof num !== "number") {
-    throw new TypeError("Input must be a number");
+  if (typeof num !== 'number') {
+    throw new TypeError('Input must be a number');
   }
   if (num < 2 || !Number.isInteger(num)) {
     return false;
