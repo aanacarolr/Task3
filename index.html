@@ -29,30 +29,40 @@
       const numbersInput = document.getElementById('numbers').value;
       const testNumInput = document.getElementById('testNum').value;
 
-      try {
-        const numbers = numbersInput.split(',')
-          .map(str => {
-            const num = parseFloat(str.trim());
-            if (isNaN(num)) throw new Error('Please enter valid numbers');
-            return num;
-          });
+      // Parse numbers, ignore invalid entries
+      const numbers = numbersInput.split(',')
+        .map(str => parseFloat(str.trim()))
+        .filter(num => !isNaN(num));
 
-        const testNum = parseInt(testNumInput);
-        if (isNaN(testNum)) throw new Error('Please enter a valid test number');
+      const invalidEntries = numbersInput.split(',')
+        .map(str => str.trim())
+        .filter(str => str && isNaN(parseFloat(str)));
 
-        const results = `
-Sum: ${sum(numbers)}
+      const testNum = parseInt(testNumInput);
+
+      if (numbers.length === 0) {
+        output.textContent = 'Error: Please enter at least one valid number';
+        return;
+      }
+      if (isNaN(testNum)) {
+        output.textContent = 'Error: Please enter a valid test number';
+        return;
+      }
+
+      let warning = '';
+      if (invalidEntries.length > 0) {
+        warning = `Warning: The following entries were ignored as invalid: ${invalidEntries.join(', ')}\n\n`;
+      }
+
+      const results = `
+${warning}Sum: ${sum(numbers)}
 Average: ${average(numbers)}
 Max: ${max(numbers)}
 Min: ${min(numbers)}
 Is ${testNum} prime?: ${isPrime(testNum)}
-        `;
+      `;
 
-        output.textContent = results;
-
-      } catch (err) {
-        output.textContent = 'Error: ' + err.message;
-      }
+      output.textContent = results.trim();
     });
   </script>
 </body>
