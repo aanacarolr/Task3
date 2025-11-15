@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MathUtils Interactive Test</title>
+</head>
+<body>
+  <h1>MathUtils Test</h1>
+
+  <label for="numbers">Enter numbers (comma separated):</label><br />
+  <input type="text" id="numbers" placeholder="e.g. 1,2,3,4,5" size="40" /><br /><br />
+
+  <label for="testNum">Enter a test number (for isPrime):</label><br />
+  <input type="number" id="testNum" placeholder="e.g. 7" /><br /><br />
+
+  <button id="runBtn">Run</button>
+
+  <h2>Results:</h2>
+  <pre id="output"></pre>
+
+  <script type="module">
+    import { sum, average, max, min, isPrime } from './MathUtils.js';
+
+    const runBtn = document.getElementById('runBtn');
+    const output = document.getElementById('output');
+
+    runBtn.addEventListener('click', () => {
+      const numbersInput = document.getElementById('numbers').value;
+      const testNumInput = document.getElementById('testNum').value;
+
+      try {
+        const numbers = numbersInput.split(',')
+          .map(str => {
+            const num = parseFloat(str.trim());
+            if (isNaN(num)) throw new Error('Please enter valid numbers');
+            return num;
+          });
+
+        const testNum = parseInt(testNumInput);
+        if (isNaN(testNum)) throw new Error('Please enter a valid test number');
+
+        const results = `
+Sum: ${sum(numbers)}
+Average: ${average(numbers)}
+Max: ${max(numbers)}
+Min: ${min(numbers)}
+Is ${testNum} prime?: ${isPrime(testNum)}
+        `;
+
+        output.textContent = results;
+
+      } catch (err) {
+        output.textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
