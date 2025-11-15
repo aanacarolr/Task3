@@ -1,30 +1,24 @@
 name: MathUtils CI Pipeline
 
 on:
-  push:
-    branches:
-      - "**"      # Runs on push to any branch
-  pull_request:   # Also runs on PRs
+  - push
 
 jobs:
-  build-and-test:
-    name: Build and Test MathUtils
-    runs-on: ubuntu-latest
+  say-hello:
+    name: Say Hello
+
+       runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      
+      - name: Print greeting
+        run: echo "Hello, GitHub Actions! The app is Math Utils"
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      - name: Print date and time
+        run: date
 
-      - name: Install dependencies
-        run: npm install
+      - name: Print system information
+        run: |
+          echo "Running on:"
+          uname -a
 
-      - name: Run tests
-        run: npm test   # Assumes you have tests set up. Adapt as needed.
-
-      - name: Print system info
-        run: uname -a
