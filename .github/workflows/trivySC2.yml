@@ -7,12 +7,12 @@ on:
   pull_request:
 
 env:
-  AWS_REGION: us-east-1                     
-  ECS_SERVICE: MathUtilsApp-Service                  
-  ECS_CLUSTER: Mathutils                  
-  ECS_TASK_DEFINITION: task-definition.json 
-  CONTAINER_NAME: App           
-  DOCKERHUB_USERNAME: anacarolr    
+  AWS_REGION: us-east-1
+  ECS_SERVICE: MathUtilsApp-Service
+  ECS_CLUSTER: Mathutils
+  ECS_TASK_DEFINITION: MathUtilsApp           
+  CONTAINER_NAME: App
+  DOCKERHUB_USERNAME: anacarolr
 
 permissions:
   contents: read
@@ -26,13 +26,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2) Set up Node.js 
+      # 2) Set up Node.js
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 3) Install Node.js dependencies 
+      # 3) Install Node.js dependencies
       - name: Install dependencies
         if: hashFiles('package.json') != ''
         run: npm install
@@ -88,16 +88,38 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 11) Fill in the new Docker Hub image in the Amazon ECS task definition
+      # 11) Download current task definition from ECS
+      - name: Download current task definition from ECS
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.ECS_TASK_DEFINITION }} \
+            --query taskDefinition > task-definition-raw.json
+
+      # 12) Clean task definition JSON (remove unsupported metadata keys)
+      - name: Clean task definition JSON
+        run: |
+          cat task-definition-raw.json \
+            | jq 'del(
+                .compatibilities,
+                .taskDefinitionArn,
+                .requiresAttributes,
+                .revision,
+                .status,
+                .registeredAt,
+                .registeredBy,
+                .enableFaultInjection
+              )' > task-definition.json
+
+      # 13) Fill in the new Docker Hub image in the Amazon ECS task definition
       - name: Render Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ env.DOCKERHUB_USERNAME }}/task3-app:${{ github.sha }}
 
-      # 12) Deploy Amazon ECS task definition
+      # 14) Deploy Amazon ECS task definition
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
