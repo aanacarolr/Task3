@@ -27,6 +27,6 @@ jobs:
           trivy fs .
 
       # This step is ready for when you build/push images
-      - name: Scan Docker image
-        if: ${{ always() }} # will run regardless, but skip/fail if no image found
-        run: trivy image <your-image-name>
+      #- name: Scan Docker image
+      #  if: ${{ always() }} # will run regardless, but skip/fail if no image found
+      #  run: trivy image <your-image-name>
