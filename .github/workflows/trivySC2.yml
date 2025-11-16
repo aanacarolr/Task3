@@ -1,4 +1,4 @@
-name: Trivy Security Scan 2
+name: Trivy Security Scan
 
 on:
   push:
@@ -15,17 +15,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Trivy vulnerability scanner on code
-        uses: aquasecurity/trivy-action@v0.13.1
+        uses: aquasecurity/trivy-action@v0.11.2
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          format: 'table' 
+          format: 'table'
           severity: 'HIGH,CRITICAL'
 
-
-      # Uncomment and set your image name when you have Docker images to scan after 
+      # Uncomment below when you have Docker images to scan
       # - name: Scan Docker image
-      #   uses: aquasecurity/trivy-action@v0.13.1
+      #   uses: aquasecurity/trivy-action@v0.11.2
       #   with:
       #     scan-type: 'image'
       #     image-ref: '<your-image-name>'
