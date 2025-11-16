@@ -3,7 +3,7 @@
  */
 
 /**
- * Calculates the sum of an array of numbers, ignoring non-numeric and NaN entries.
+ * Calculates the sum of an array of numbers, ignoring non-numeric and NaN entries..
  * @param {number[]} numbers - Array of numbers to sum
  * @returns {number} The sum of all valid numbers
  */
