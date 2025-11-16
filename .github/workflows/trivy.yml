@@ -14,19 +14,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Trivy
-        run: |
-          sudo apt-get update
-          sudo apt-get install wget
-          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
-          sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
+      - name: Run Trivy vulnerability scanner on code
+        uses: aquasecurity/trivy-action@v0.13.1
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
 
-      - name: Scan repository for secrets and vulnerabilities
-        run: |
-          trivy config .
-          trivy fs .
-
-      # This step is ready for when you build/push images
-      - name: Scan Docker image
-        if: ${{ always() }} # will run regardless, but skip/fail if no image found
-        run: trivy image <your-image-name>
+      # Uncomment and set your image name when you have Docker images to scan
+      # - name: Scan Docker image
+      #   uses: aquasecurity/trivy-action@v0.13.1
+      #   with:
+      #     scan-type: 'image'
+      #     image-ref: '<your-image-name>'
+      #     format: 'table'
+      #     severity: 'HIGH,CRITICAL'
