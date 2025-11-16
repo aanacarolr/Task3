@@ -1,0 +1,32 @@
+name: Trivy Security Scan
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install wget
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
+          sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
+
+      - name: Scan repository for secrets and vulnerabilities
+        run: |
+          trivy config .
+          trivy fs .
+
+      # This step is ready for when you build/push images
+      - name: Scan Docker image
+        if: ${{ always() }} # will run regardless, but skip/fail if no image found
+        run: trivy image <your-image-name>
