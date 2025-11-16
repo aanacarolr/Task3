@@ -19,10 +19,11 @@ jobs:
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          format: 'table'
+          format: 'table' 
           severity: 'HIGH,CRITICAL'
 
-      # Uncomment and set your image name when you have Docker images to scan
+
+      # Uncomment and set your image name when you have Docker images to scan after 
       # - name: Scan Docker image
       #   uses: aquasecurity/trivy-action@v0.13.1
       #   with:
