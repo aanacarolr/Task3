@@ -1,4 +1,4 @@
-name: Trivy Security Scan
+name: GitHub Actions Pipeline Math Utils App
 
 on:
   push:
@@ -7,14 +7,30 @@ on:
   pull_request:
 
 jobs:
-  trivy:
+  pipeline:
     runs-on: ubuntu-latest
 
     steps:
+      # 1) Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 1) Scan source code
+      # 2) Set up Node.js (optional, but recommended)
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3) Install Node.js dependencies (optional, only if package.json exists)
+      - name: Install dependencies
+        if: hashFiles('package.json') != ''
+        run: npm install
+
+      # 4) Run MathUtils test script (test2.js)
+      - name: Run MathUtils test script
+        run: node test2.js
+
+      # 5) Scan source code with Trivy (filesystem scan)
       - name: Run Trivy vulnerability scanner on code
         uses: aquasecurity/trivy-action@master
         with:
@@ -23,12 +39,12 @@ jobs:
           format: 'table'
           severity: 'HIGH,CRITICAL'
 
-      # 2) Build Docker image
+      # 6) Build Docker image
       - name: Build Docker image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/task3-app:${{ github.sha }} .
 
-      # 3) Scan built Docker image
+      # 7) Scan built Docker image with Trivy (image scan)
       - name: Scan Docker image
         uses: aquasecurity/trivy-action@master
         with:
@@ -37,14 +53,14 @@ jobs:
           format: 'table'
           severity: 'HIGH,CRITICAL'
 
-      # 4) Login to Docker Hub
+      # 8) Login to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 5) Push image to Docker Hub
+      # 9) Push image to Docker Hub
       - name: Push Docker image
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/task3-app:${{ github.sha }}
