@@ -14,6 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 1) Trivy scan on the repo filesystem (code scan first)
       - name: Run Trivy vulnerability scanner on code
         uses: aquasecurity/trivy-action@master
         with:
@@ -22,11 +23,17 @@ jobs:
           format: 'table'
           severity: 'HIGH,CRITICAL'
 
-      # Uncomment below when you have Docker images to scan
-      # - name: Scan Docker image
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     scan-type: 'image'
-      #     image-ref: '<your-image-name>'
-      #     format: 'table'
-      #     severity: 'HIGH,CRITICAL'
+      # 2) Build Docker image after code scan
+      - name: Build Docker image
+        run: |
+          docker build -t task3-app:${{ github.sha }} .
+
+      # 3) Trivy scan on the built Docker image
+      - name: Scan Docker image
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          image-ref: 'task3-app:${{ github.sha }}'
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
+
