@@ -1,6 +1,6 @@
 import { sum, average, max, min, isPrime } from './MathUtils.js';
 
-const numbers = [11, 25, 35, 87, 95, 46];
+const numbers = [11, 25, 35, 24, 95, 46];
 const testNumber = 88;
 
 console.log('Sum:', sum(numbers));          
