@@ -6,6 +6,17 @@ on:
       - '**'
   pull_request:
 
+env:
+  AWS_REGION: us-east-1                     
+  ECS_SERVICE: MathUtilsApp-Service                  
+  ECS_CLUSTER: Mathutils                  
+  ECS_TASK_DEFINITION: .aws/task-definition.json 
+  CONTAINER_NAME: App           
+  DOCKERHUB_USERNAME: anacarolr    
+
+permissions:
+  contents: read
+
 jobs:
   pipeline:
     runs-on: ubuntu-latest
@@ -15,13 +26,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2) Set up Node.js (optional, but recommended)
+      # 2) Set up Node.js 
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 3) Install Node.js dependencies (optional, only if package.json exists)
+      # 3) Install Node.js dependencies 
       - name: Install dependencies
         if: hashFiles('package.json') != ''
         run: npm install
@@ -41,8 +52,10 @@ jobs:
 
       # 6) Build Docker image
       - name: Build Docker image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/task3-app:${{ github.sha }} .
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/task3-app:${IMAGE_TAG} .
 
       # 7) Scan built Docker image with Trivy (image scan)
       - name: Scan Docker image
@@ -62,5 +75,33 @@ jobs:
 
       # 9) Push image to Docker Hub
       - name: Push Docker image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/task3-app:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/task3-app:${IMAGE_TAG}
+
+      # 10) Configure AWS credentials (for ECS deploy)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 11) Fill in the new Docker Hub image in the Amazon ECS task definition
+      - name: Render Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ env.DOCKERHUB_USERNAME }}/task3-app:${{ github.sha }}
+
+      # 12) Deploy Amazon ECS task definition
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
