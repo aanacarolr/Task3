@@ -1,0 +1,32 @@
+name: Trivy Security Scan
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner on code
+        uses: aquasecurity/trivy-action@v0.13.1
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
+
+      # Uncomment and set your image name when you have Docker images to scan
+      # - name: Scan Docker image
+      #   uses: aquasecurity/trivy-action@v0.13.1
+      #   with:
+      #     scan-type: 'image'
+      #     image-ref: '<your-image-name>'
+      #     format: 'table'
+      #     severity: 'HIGH,CRITICAL'
